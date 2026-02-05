@@ -3,12 +3,12 @@ import os
 
 setup(
     name='pycmt',
-    version=os.getenv("VERSION", '0.0.0-dev'),
+    version=os.getenv("VERSION", '0.0.0'),
     py_modules=['pycmt'],
     ext_modules = [
         Extension("pycmt",
             sources=["pycmt.pyx"],
-            language="c++",
+            # language="c++",
             extra_objects=['/usr/lib/libcmt.a'],
         )
     ],

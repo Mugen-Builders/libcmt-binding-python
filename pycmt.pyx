@@ -4,7 +4,6 @@ cimport libcmt
 
 cdef class Rollup:
     cdef libcmt.cmt_rollup_t _c_rollup[1]
-    cdef libcmt.cmt_abi_address_t *app_address
 
     def __cinit__(self):
         libcmt.cmt_rollup_init(self._c_rollup)
@@ -29,7 +28,6 @@ cdef class Rollup:
         err = libcmt.cmt_rollup_read_advance_state(self._c_rollup, input)
         if err != 0:
             raise Exception(f"Failed to read advance ({err})")
-        self.app_address = &input[0].app_contract
         payload = input[0].payload.data[:input[0].payload.length]
         app_contract = input[0].app_contract.data[:libcmt.CMT_ABI_ADDRESS_LENGTH]
         msg_sender = input[0].msg_sender.data[:libcmt.CMT_ABI_ADDRESS_LENGTH]
@@ -106,3 +104,38 @@ cdef class Rollup:
         err = libcmt.cmt_rollup_emit_exception(self._c_rollup, payload_ptr)
         if err != 0:
             raise Exception(f"Failed to emit exception ({err})")
+
+    cpdef load_merkle(self, str merkle_path):
+        b_merkle_path = merkle_path.encode('UTF-8')
+        cdef char *c_merkle_path = b_merkle_path
+        err = libcmt.cmt_rollup_load_merkle(self._c_rollup, c_merkle_path)
+        if err != 0:
+            raise Exception(f"Failed to load merkle ({err})")
+
+    cpdef save_merkle(self, str merkle_path):
+        b_merkle_path = merkle_path.encode('UTF-8')
+        cdef char *c_merkle_path = b_merkle_path
+        err = libcmt.cmt_rollup_save_merkle(self._c_rollup, c_merkle_path)
+        if err != 0:
+            raise Exception(f"Failed to save merkle ({err})")
+
+    cpdef reset_merkle(self):
+        err = libcmt.cmt_rollup_reset_merkle(self._c_rollup)
+        if err != 0:
+            raise Exception(f"Failed to reset merkle ({err})")
+
+    cpdef object gio_request(self, int domain, bytes id):
+        cdef libcmt.cmt_gio_t req_ptr[1]
+        req_ptr[0].domain = domain
+        req_ptr[0].id = <void *>id
+        req_ptr[0].id_length = len(id)
+        err = libcmt.cmt_gio_request(self._c_rollup, req_ptr)
+        if err != 0:
+            raise Exception(f"Failed to request gio ({err})")
+        response = (<uint8_t *>req_ptr[0].response_data)[:req_ptr[0].response_data_length]
+        ret = {
+            "response_data_length": req_ptr[0].response_data_length,
+            "response_data": response,
+            "response_code": req_ptr[0].response_code
+        }
+        return ret

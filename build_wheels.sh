@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e -u -x
 
+project_path=${1:-.}
+
 function repair_wheel {
     wheel="$1"
     if ! auditwheel show "$wheel"; then
@@ -12,7 +14,7 @@ function repair_wheel {
 
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
-    "${PYBIN}/pip3" wheel /opt/build --no-deps -w wheelhouse/
+    "${PYBIN}/pip3" wheel $project_path --no-deps -w wheelhouse/
 done
 
 # Bundle external shared libraries into the wheels

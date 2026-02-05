@@ -1,4 +1,4 @@
-from libc.stdint cimport uint64_t, uint8_t
+from libc.stdint cimport uint64_t, uint32_t, uint16_t, uint8_t
 
 cdef extern from "/usr/include/libcmt/io.h":
     cdef enum:
@@ -34,8 +34,13 @@ cdef extern from "/usr/include/libcmt/rollup.h":
     ctypedef struct cmt_rollup_finish_t:
         bint accept_previous_request
         int next_request_type
-    # ctypedef struct cmt_gio_t:
-    #     pass
+    ctypedef struct cmt_gio_t:
+        uint16_t domain
+        uint32_t id_length
+        void *id
+        uint16_t response_code
+        uint32_t response_data_length
+        void *response_data
 
     int cmt_rollup_init(cmt_rollup_t* me)
     int cmt_rollup_fini(cmt_rollup_t* me)
@@ -50,7 +55,7 @@ cdef extern from "/usr/include/libcmt/rollup.h":
     int cmt_rollup_read_inspect_state(cmt_rollup_t *me, cmt_rollup_inspect_t *inspect)
     int cmt_rollup_finish(cmt_rollup_t *me, cmt_rollup_finish_t *finish)
 
-    # int cmt_gio_request(cmt_rollup_t *me, cmt_gio_t *req)
-    # int cmt_rollup_load_merkle(cmt_rollup_t *me, char *path)
-    # int cmt_rollup_save_merkle(cmt_rollup_t *me, char *path)
-    # void cmt_rollup_reset_merkle(cmt_rollup_t *me)
+    int cmt_gio_request(cmt_rollup_t *me, cmt_gio_t *req)
+    int cmt_rollup_load_merkle(cmt_rollup_t *me, char *path)
+    int cmt_rollup_save_merkle(cmt_rollup_t *me, char *path)
+    void cmt_rollup_reset_merkle(cmt_rollup_t *me)
