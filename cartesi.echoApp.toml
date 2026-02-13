@@ -1,0 +1,11 @@
+[machine]
+entrypoint = "/usr/local/bin/python3 /opt/cartesi/app/app.py"
+ram_length = "64Mi"
+workdir = "/opt/cartesi/app"
+
+[drives.root]
+builder = "docker"
+dockerfile = "sample_apps/echo_app/Dockerfile"
+context = "sample_apps/echo_app"
+format = "ext2"
+extra_size = "16Mb"

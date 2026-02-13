@@ -1,5 +1,4 @@
 from libc.stdint cimport uint64_t, uint8_t
-from libc.stdlib cimport free, malloc
 cimport libcmt
 
 cdef class Rollup:
