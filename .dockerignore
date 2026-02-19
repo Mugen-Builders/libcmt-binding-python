@@ -1,4 +1,4 @@
 .*
 *.dockerfile
-wheelhouse
 *.cpp
+*.c

@@ -41,6 +41,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Create virtual environment and install test suite
+        run: |
+          python3 -m venv .venv
+          . .venv/bin/activate
+          pip install --upgrade pip
+          pip install "cartesapp[dev]@git+https://github.com/prototyp3-dev/cartesapp@v1.2.2"
+
+      - name: Verify cartesapp CLI
+        run: |
+          . .venv/bin/activate
+          cartesapp --help
+
+      - name: Run tests
+        run: |
+          . .venv/bin/activate
+          cartesapp test --cartesi-machine --config-file "./cartesi.echoApp.toml" --log-level debug --drive-config "root.dockerfile=sample_apps/echo_app/${{ matrix.images.image }}.dockerfile"
+
       - name: Build Wheels
         run: |
           docker build --platform=linux/riscv64 --build-arg PLAT=${{ matrix.images.plat }} -t ${{ matrix.images.image }}-builder -f ${{ matrix.images.image }}.dockerfile .

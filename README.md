@@ -19,6 +19,8 @@
 
 - [Table of Contents](#table-of-contents)
 - [Overview](#overview)
+- [Requirements](#requirements)
+- [Usage](#usage)
 
 ## Overview
 
@@ -160,12 +162,12 @@ while True:
 
 ## Building and running the Sample echo app
 
-Config is in `cartesi.echoApp.toml`; the root filesystem is built from `sample_apps/echo_app/Dockerfile`.
+The `sample_apps/echo_app` is a sample application using the libcmt Python bindings. The app simply receives deposits and emits a voucher to the sender with the same amount. To build and run, go the the `sample_apps/echo_app` directory and:
 
 **Build the machine image (RISC-V):**
 
 ```bash
-cartesi build -c "./cartesi.echoApp.toml"
+cartesi build
 ```
 
 **Run the Cartesi machine:**
@@ -191,11 +193,29 @@ pip3 install cartesapp[dev]@git+https://github.com/prototyp3-dev/cartesapp@v1.2.
 cartesapp test --config-file "./cartesi.echoApp.toml" --log-level debug --cartesi-machine
 ```
 
-This builds, starts the machine, and runs the test client.
+This builds, and runs the test client.
 
-**Run tests (pytest only, if you have a running node):**
+## Local Builds and Testing
 
-Test modules live in `tests/` (e.g. `test_echo.py`, `model.py`).
+You'll need to build the library locally and install it in the sample app's environment. But first you'll need to create the builder docker image:
+
+```bash
+docker build --platform=linux/riscv64 -t builder -f alpine.builder .
+```
+
+Then, to build the library and install it in the sample app:
+
+```bash
+docker run --rm -v $PWD:/mnt/build -w /mnt/build -u $(id -u):$(id -g) builder /mnt/build/build_wheels.sh
+```
+
+Note: you can do a similar task for ubuntu repo using the `ubuntu.dockerfile`.
+
+Then you can test the library with the sample app using `cartesapp`:
+
+```bash
+cartesapp test --config-file "./cartesi.echoApp.toml" --log-level debug --cartesi-machine
+```
 
 ## License
 

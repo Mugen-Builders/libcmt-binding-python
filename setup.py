@@ -8,8 +8,9 @@ setup(
     ext_modules = [
         Extension("pycmt",
             sources=["pycmt.pyx"],
-            # language="c++",
             extra_objects=['/usr/lib/libcmt.a'],
+            extra_compile_args=["-fpic","-fstack-protector-strong"],
+            library_dirs=["/usr/local/lib/","/usr/lib"],
         )
     ],
     setup_requires=[

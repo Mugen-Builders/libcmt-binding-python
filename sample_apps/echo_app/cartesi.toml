@@ -5,7 +5,6 @@ workdir = "/opt/cartesi/app"
 
 [drives.root]
 builder = "docker"
-dockerfile = "sample_apps/echo_app/alpine.dockerfile"
+dockerfile = "alpine.dockerfile"
 format = "ext2"
 extra_size = "16Mb"
-build_args = ["APP_DIR=sample_apps/echo_app","INSTALL_STEP=install-local"]
